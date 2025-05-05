@@ -31,12 +31,13 @@ export const combineReducer = combineReducers({
   notification: notificationReducer
 });
 
-export const rootReducers = (state: ReturnType<typeof combineReducer> | undefined, action: any) => {
+export const rootReducers: Reducer<ReturnType<typeof combineReducer>> = (state, action) => {
   if (action.type === 'logout/logout') {
-    state = undefined; // Reset state
+    state = {} as ReturnType<typeof combineReducer>;
   }
   return combineReducer(state, action);
 };
+
 
 const persistedReducer = persistReducer(persistConfig, rootReducers);
 
@@ -50,10 +51,9 @@ export const store = configureStore({
       }
     }).concat(api.middleware)
 });
-
 setupListeners(store.dispatch);
 
-export type RootState = ReturnType<typeof store.getState>;
+export type RootState = ReturnType<typeof combineReducer>;
 export type AppDispatch = typeof store.dispatch;
 
 export const useAppDispatch: () => AppDispatch = useDispatch;
