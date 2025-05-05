@@ -1,5 +1,4 @@
 import { combineReducers, configureStore } from '@reduxjs/toolkit';
-import { ToolkitStore } from '@reduxjs/toolkit/dist/configureStore';
 import { setupListeners } from '@reduxjs/toolkit/query';
 import { TypedUseSelectorHook, useDispatch, useSelector } from 'react-redux';
 import { Reducer } from 'redux';
@@ -32,17 +31,16 @@ export const combineReducer = combineReducers({
   notification: notificationReducer
 });
 
-export const rootReducers: Reducer<RootState> = (state, action) => {
-  // this is to reset the state to default when user logs out
+export const rootReducers = (state: ReturnType<typeof combineReducer> | undefined, action: any) => {
   if (action.type === 'logout/logout') {
-    state = {} as RootState;
+    state = undefined; // Reset state
   }
   return combineReducer(state, action);
 };
 
 const persistedReducer = persistReducer(persistConfig, rootReducers);
 
-export const store: ToolkitStore = configureStore({
+export const store = configureStore({
   devTools: true,
   reducer: persistedReducer,
   middleware: (getDefaultMiddleware) =>
@@ -52,6 +50,7 @@ export const store: ToolkitStore = configureStore({
       }
     }).concat(api.middleware)
 });
+
 setupListeners(store.dispatch);
 
 export type RootState = ReturnType<typeof store.getState>;
